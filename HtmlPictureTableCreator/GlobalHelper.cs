@@ -26,6 +26,33 @@ namespace HtmlPictureTableCreator
             Error
         }
         /// <summary>
+        /// The different image ratios
+        /// </summary>
+        public enum ImageRatio
+        {
+            /// <summary>
+            /// Custom ratio
+            /// </summary>
+            [Description("Custom")]
+            Custom = 0,
+            /// <summary>
+            /// 4:3 ratio
+            /// </summary>
+            [Description("4:3")]
+            FourToThree = 1,
+            /// <summary>
+            /// 16:9 ratio
+            /// </summary>
+            [Description("16:9")]
+            SixteenToNine = 2,
+            /// <summary>
+            /// 16:10 ratio
+            /// </summary>
+            [Description("16:10")]
+            SixteenToTen = 3
+        }
+
+        /// <summary>
         /// Delegate for an info message event
         /// </summary>
         /// <param name="infoType">The type of the message (<see cref="InfoType"/>)</param>

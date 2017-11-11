@@ -32,5 +32,25 @@ namespace HtmlPictureTableCreator
                 viewModel.InitViewModel();
             }
         }
+        /// <summary>
+        /// Occurs when the width was changed
+        /// </summary>
+        private void ThumbnailWidth_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.CalculateRatio(true);
+            }
+        }
+        /// <summary>
+        /// Occurs when the height was changed
+        /// </summary>
+        private void ThumbnailHeight_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.CalculateRatio(false);
+            }
+        }
     }
 }

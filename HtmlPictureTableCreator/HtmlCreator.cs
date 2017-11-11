@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Text;
 using HtmlPictureTableCreator.DataObjects;
 using HtmlPictureTableCreator.HtmlRessources;
@@ -81,6 +78,7 @@ namespace HtmlPictureTableCreator
                 {
                     ThumbnailManager.OnNewInfo += ThumbnailManagerOnOnNewInfo;
                     imageSizeList = ThumbnailManager.CreateThumbnails(source, thumbWidth, thumbHeight, keepRatio);
+                    ThumbnailManager.OnNewInfo -= ThumbnailManagerOnOnNewInfo;
                 }
 
                 var htmlTable = new StringBuilder("");
@@ -176,12 +174,12 @@ namespace HtmlPictureTableCreator
                     break;
                 case FooterType.FileDetails:
                     var image = Image.FromFile(imageFile.FullName);
-                    var detailTable = new StringBuilder("<table border='0' cellspacing='0' cellpadding='1'>");
-                    detailTable.AppendLine($"<tr><td>File:</td><td>{imageFile.Name}</td></tr>");
-                    detailTable.AppendLine($"<tr><td>Date:</td><td>{imageFile.CreationTime:g}</td></tr>");
-                    detailTable.AppendLine($"<tr><td>Size:</td><td>{image.Width}x{image.Height}</td></tr>");
+                    var detailTable = new StringBuilder("<table border='0' cellspacing='0' cellpadding='3'>");
+                    detailTable.AppendLine($"<tr><td align='right'>File:</td><td>{imageFile.Name}</td></tr>");
+                    detailTable.AppendLine($"<tr><td align='right'>Date:</td><td>{imageFile.CreationTime:g}</td></tr>");
+                    detailTable.AppendLine($"<tr><td align='right'>Size:</td><td>{image.Width}x{image.Height}</td></tr>");
                     detailTable.AppendLine(
-                        $"<tr><td>Filesize:</td><td>{(double) imageFile.Length / 1024 / 1024:N2}MB</td></tr>");
+                        $"<tr><td align='right'>File size:</td><td>{(double) imageFile.Length / 1024 / 1024:N2} MB</td></tr>");
                     detailTable.AppendLine("</table>");
                     stringBuilder.Append(detailTable);
                     break;
@@ -221,16 +219,24 @@ namespace HtmlPictureTableCreator
         {
             try
             {
+                // Calculates the percent
+                string CalculatePercent(int step, int max)
+                {
+                    return $"{100d / max * step:N2}";
+                }
+
                 var archivePath = Path.Combine(source, archiveName);
                 if (File.Exists(archivePath))
                     File.Delete(archivePath);
 
+                var count = 1;
                 using (var zipFile = new ZipFile())
                 {
                     var files = GlobalHelper.GetImageFiles(source);
 
                     foreach (var file in files)
                     {
+                        OnInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create archive ({CalculatePercent(count++, files.Count)}%)");
                         zipFile.AddFile(file.FullName);
                     }
 

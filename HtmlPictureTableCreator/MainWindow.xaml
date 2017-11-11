@@ -79,6 +79,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -93,22 +94,36 @@
                                   Grid.Column="1"
                                   Margin="3"
                                   VerticalAlignment="Center"
-                                  IsChecked="{Binding KeepRatio}" />
+                                  IsChecked="{Binding KeepRatio}"
+                                  IsEnabled="{Binding KeepRatioEnabled}"/>
+                        
                         <Label Grid.Row="1"
                                Grid.Column="0"
-                               Content="Width:" />
-                        <xctk:IntegerUpDown Grid.Row="1"
-                                            Grid.Column="1"
-                                            Margin="3"
-                                            Value="{Binding ThumbnailWidth}" />
-
+                               Content="Ratio:"/>
+                        
+                        <ComboBox Grid.Row="1"
+                                  Grid.Column="1"
+                                  Margin="3"
+                                  ItemsSource="{Binding RatioList, Mode=OneWay}"
+                                  SelectedValue="{Binding SelectedRatio}"/>
+                        
                         <Label Grid.Row="2"
                                Grid.Column="0"
-                               Content="Height:" />
+                               Content="Width:" />
                         <xctk:IntegerUpDown Grid.Row="2"
                                             Grid.Column="1"
                                             Margin="3"
-                                            Value="{Binding ThumbnailHeight}" />
+                                            Value="{Binding ThumbnailWidth}"
+                                            ValueChanged="ThumbnailWidth_OnValueChanged"/>
+
+                        <Label Grid.Row="3"
+                               Grid.Column="0"
+                               Content="Height:" />
+                        <xctk:IntegerUpDown Grid.Row="3"
+                                            Grid.Column="1"
+                                            Margin="3"
+                                            Value="{Binding ThumbnailHeight}" 
+                                            ValueChanged="ThumbnailHeight_OnValueChanged"/>
                     </Grid>
                 </GroupBox>
 

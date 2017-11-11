@@ -25,7 +25,7 @@ namespace HtmlPictureTableCreator
         /// <summary>
         /// Contains the value which indicates if the user wants to create thumbnails
         /// </summary>
-        private bool _createThumbnails;
+        private bool _createThumbnails = true;
         /// <summary>
         /// Gets or sets the CreateThumbnails value
         /// </summary>
@@ -187,7 +187,41 @@ namespace HtmlPictureTableCreator
             get => _openPage;
             set => SetField(ref _openPage, value);
         }
+        /// <summary>
+        /// Contains the image ratio list
+        /// </summary>
+        public List<ComboBoxItem> RatioList { get; } = new List<ComboBoxItem>();
 
+        /// <summary>
+        /// Contains the selected ratio entry
+        /// </summary>
+        private ComboBoxItem _selectedRatio =
+            new ComboBoxItem(GlobalHelper.GetEnumDescription(GlobalHelper.ImageRatio.Custom),
+                (int) GlobalHelper.ImageRatio.Custom);
+        /// <summary>
+        /// Gets or sets the selected ratio entry
+        /// </summary>
+        public ComboBoxItem SelectedRatio
+        {
+            get => _selectedRatio;
+            set
+            {
+                SetField(ref _selectedRatio, value);
+                KeepRatioEnabled = value.Value == (int) GlobalHelper.ImageRatio.Custom;
+            }
+        }
+        /// <summary>
+        /// Contains the value which indicates if there is a "fix" ratio selected
+        /// </summary>
+        private bool _keppRatioEnabled;
+        /// <summary>
+        /// Gets or sets the fix ratio value
+        /// </summary>
+        public bool KeepRatioEnabled
+        {
+            get => _keppRatioEnabled;
+            set => SetField(ref _keppRatioEnabled, value);
+        }
 
         /// <summary>
         /// The start command
@@ -210,7 +244,13 @@ namespace HtmlPictureTableCreator
             {
                 ImageFooterList.Add(
                     new ComboBoxItem(GlobalHelper.GetEnumDescription((HtmlCreator.FooterType) value), (int) value));
-            }   
+            }
+
+            foreach (var value in Enum.GetValues(typeof(GlobalHelper.ImageRatio)))
+            {
+                RatioList.Add(
+                    new ComboBoxItem(GlobalHelper.GetEnumDescription((GlobalHelper.ImageRatio) value), (int) value));
+            }
         }
 
         /// <summary>
@@ -231,7 +271,7 @@ namespace HtmlPictureTableCreator
             {
                 var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(Source, CreateThumbnails,
                     ThumbnailHeight,
-                    ThumbnailWidth, KeepRatio, HeaderText, BlankTarget, ColumnCount,
+                    ThumbnailWidth, KeepRatioEnabled && KeepRatio, HeaderText, BlankTarget, ColumnCount,
                     (HtmlCreator.FooterType) ImageFooter.Value, CreateArchive, ArchiveName, OpenPage));
 
                 task.Wait();
@@ -241,6 +281,7 @@ namespace HtmlPictureTableCreator
                 {
                     InfoText += $"\r\n> Error | An error has occured. Message: {t.Exception.Message}";
                 }
+                HtmlCreator.OnInfo -= Helper_InfoEvent;
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
         /// <summary>
@@ -286,6 +327,58 @@ namespace HtmlPictureTableCreator
             {
                 Source = dialog.FileName;
             }
+        }
+        /// <summary>
+        /// Calculate the opponent ratio value
+        /// </summary>
+        /// <param name="height">true to calculate the height, otherwise false</param>
+        public void CalculateRatio(bool height)
+        {
+            var ratio = (GlobalHelper.ImageRatio) SelectedRatio.Value;
+            
+
+            double result;
+            var widthValue = 4;
+            var heightValue = 3;
+            switch (ratio)
+            {
+                case GlobalHelper.ImageRatio.FourToThree:
+                    widthValue = 4;
+                    heightValue = 3;
+                    break;
+                case GlobalHelper.ImageRatio.SixteenToNine:
+                    widthValue = 16;
+                    heightValue = 9;
+                    break;
+                case GlobalHelper.ImageRatio.SixteenToTen:
+                    widthValue = 16;
+                    heightValue = 10;
+                    break;
+            }
+
+            switch (ratio)
+            {
+                case GlobalHelper.ImageRatio.Custom:
+                    result = height ? ThumbnailHeight : ThumbnailWidth;
+                    break;
+                default:
+                    result = height
+                        ? ThumbnailWidth / widthValue * heightValue
+                        : ThumbnailHeight / heightValue * widthValue;
+                    break;
+            }
+
+            if (height)
+            {
+                _thumbnailHeight = (int) result;
+                OnPropertyChanged(nameof(ThumbnailHeight));
+            }
+            else
+            {
+                _thumbnailWidth = (int) result;
+                OnPropertyChanged(nameof(ThumbnailWidth));
+            }
+
         }
     }
 }

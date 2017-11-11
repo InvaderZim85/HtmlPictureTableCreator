@@ -53,7 +53,7 @@ namespace HtmlPictureTableCreator
             {
                 OnNewInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create thumbnail {count++} of {imagesFiles.Count}");
 
-                var imageSize = ImageSize.CreateDefault();
+                var imageSize = new ImageSize(width, height);
                 if (keepRatio || height == 0 && width != 0 || height != 0 && width == 0)
                     imageSize = CalculateImageSize(image, width, height);
 
