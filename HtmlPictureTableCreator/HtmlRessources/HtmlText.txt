@@ -1,0 +1,63 @@
+﻿<html>
+    <head>
+        <title>[TITLE]</title>
+        <style>
+            body {
+                background-color: black;
+                color: white;
+                font-family: Calibri, Consolas, Arial;
+            }
+        
+            table {
+                font-size: 100%;
+            }
+        
+            th {
+                background-color: #888888;
+                color: white;
+            }
+        
+            td.head {
+                font-weight: bold;
+                background-color: silver;
+                color: white;
+            }
+        
+            td.footer {
+                background-color: green;
+                color: white;
+            }
+        
+            td.footerWarning {
+                background-color: orange;
+                color: black;
+            }
+        
+            td:hover {
+                background-color: #cfcfcf;
+                color: black;
+            }
+        
+            pre {
+                font-family: 'Hack';
+                color: blue;
+            }
+        
+            .fieldset-auto-width {
+                display: inline-block;
+            }
+        </style>
+    </head>
+    <body>
+        <div align="center">
+            <table border="0" cellspacing="0" cellpadding="3">
+                <h1 align="center">[TITLE]</h1>
+                <hr />
+                [TABLE]
+            </table>
+            <br />
+            [ARCHIVE]
+            [COPYRIGHT]
+        </div>
+    </body>
+</html>
