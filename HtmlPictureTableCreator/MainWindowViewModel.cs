@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using HtmlPictureTableCreator.DataObjects;
@@ -124,12 +125,7 @@ namespace HtmlPictureTableCreator
         /// <summary>
         /// Gets the image footer list
         /// </summary>
-        public List<ComboBoxItem> ImageFooterList { get; } = new List<ComboBoxItem>
-        {
-            new ComboBoxItem("Nothing", 0),
-            new ComboBoxItem("Image name", 1),
-            new ComboBoxItem("Number", 2)
-        };
+        public List<ComboBoxItem> ImageFooterList { get; } = new List<ComboBoxItem>();
 
         /// <summary>
         /// Contains the image footer value
@@ -179,6 +175,18 @@ namespace HtmlPictureTableCreator
             get => _archiveName;
             set => SetField(ref _archiveName, value);
         }
+        /// <summary>
+        /// Contains the open page value
+        /// </summary>
+        private bool _openPage = true;
+        /// <summary>
+        /// Gets or sets the open page value
+        /// </summary>
+        public bool OpenPage
+        {
+            get => _openPage;
+            set => SetField(ref _openPage, value);
+        }
 
 
         /// <summary>
@@ -193,6 +201,17 @@ namespace HtmlPictureTableCreator
         /// The browse command
         /// </summary>
         public ICommand BrowseCommand => new DelegateCommand(Browse);
+        /// <summary>
+        /// Inits the view model
+        /// </summary>
+        public void InitViewModel()
+        {
+            foreach (var value in Enum.GetValues(typeof(HtmlCreator.FooterType)))
+            {
+                ImageFooterList.Add(
+                    new ComboBoxItem(GlobalHelper.GetEnumDescription((HtmlCreator.FooterType) value), (int) value));
+            }   
+        }
 
         /// <summary>
         /// Starts the creation
@@ -205,12 +224,15 @@ namespace HtmlPictureTableCreator
                 return;
             }
 
-            var helper = new Helper();
-            helper.InfoEvent += Helper_InfoEvent;
+            InfoText = "HTML - Picture table creator";
+
+            HtmlCreator.OnInfo += Helper_InfoEvent;
             Task.Factory.StartNew(() =>
             {
-                var task = Task.Factory.StartNew(() => helper.CreateHtmlTable(Source, CreateThumbnails, ThumbnailHeight,
-                    ThumbnailWidth, KeepRatio, HeaderText, BlankTarget, ColumnCount, ImageFooter.Value, CreateArchive, ArchiveName));
+                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(Source, CreateThumbnails,
+                    ThumbnailHeight,
+                    ThumbnailWidth, KeepRatio, HeaderText, BlankTarget, ColumnCount,
+                    (HtmlCreator.FooterType) ImageFooter.Value, CreateArchive, ArchiveName, OpenPage));
 
                 task.Wait();
             }).ContinueWith(t =>
@@ -226,7 +248,7 @@ namespace HtmlPictureTableCreator
         /// </summary>
         /// <param name="infoType">The type</param>
         /// <param name="message">The message</param>
-        private void Helper_InfoEvent(Helper.InfoType infoType, string message)
+        private void Helper_InfoEvent(GlobalHelper.InfoType infoType, string message)
         {
             InfoText += $"\r\n> {infoType.ToString()} | {message}";
         }
@@ -244,6 +266,9 @@ namespace HtmlPictureTableCreator
             KeepRatio = false;
             ThumbnailWidth = 0;
             ThumbnailHeight = 0;
+            CreateArchive = false;
+            ArchiveName = "";
+            OpenPage = true;
             InfoText = "HTML - Picture table creator";
 
         }

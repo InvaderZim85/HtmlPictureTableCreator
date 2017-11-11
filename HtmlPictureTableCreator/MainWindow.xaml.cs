@@ -22,5 +22,15 @@ namespace HtmlPictureTableCreator
                 textBox.ScrollToEnd();
             }
         }
+        /// <summary>
+        /// Occurs when the window is loading
+        /// </summary>
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.InitViewModel();
+            }
+        }
     }
 }

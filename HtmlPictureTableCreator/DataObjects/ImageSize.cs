@@ -25,7 +25,10 @@
             Width = width;
             Height = height;
         }
-
+        /// <summary>
+        /// Creates a new instance with default values (width = 400, height = 300)
+        /// </summary>
+        /// <returns>The new instance of the class</returns>
         public static ImageSize CreateDefault()
         {
             return new ImageSize(400, 300);
