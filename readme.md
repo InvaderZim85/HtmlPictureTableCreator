@@ -4,6 +4,7 @@
 - [Overview](#overview)
 - [Usage](#usage)
 - [For developers](#for-developers)
+- [ToDos](#todos)
 
 ## Overview
 With this tool, you can create easily a *small* and *leightweight* HTML-page for a list of images. I've created this tool because I was tired to type everything on my own or use *heavy* tools to create a simple html page which shows only some images. With this tool I can create a html page, upload it to my webspace and share the link of the page with my friends to show them my images.
@@ -48,3 +49,11 @@ Following NuGet-Packages are used:
 - [NLog](http://nlog-project.org/) for logging
     - NLog.Config
     - NLog.Schema
+
+## ToDos
+The tool is in a very early stadium and some *features* are missing :) The following things are on my todo list:
+- **General**
+    - Logging of exceptions into a file via NLog. At the moment the logging is really *rudimentary*
+- **Design**
+    - Color-Chooser for the background / foreground color of the page
+    - Font-Dialog to choose a another font
