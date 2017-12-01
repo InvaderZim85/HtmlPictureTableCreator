@@ -58,6 +58,12 @@ namespace HtmlPictureTableCreator
         /// <param name="infoType">The type of the message (<see cref="InfoType"/>)</param>
         /// <param name="message">The message</param>
         public delegate void InfoEvent(InfoType infoType, string message);
+        /// <summary>
+        /// Delegate for the progress event
+        /// </summary>
+        /// <param name="value">The current value</param>
+        /// <param name="maxValue">The max value</param>
+        public delegate void ProgressEvent(double value, double maxValue);
 
         /// <summary>
         /// Contains the different file types
@@ -145,6 +151,20 @@ namespace HtmlPictureTableCreator
                 Logger.Error("An error has occured while extracting the enum description.", ex);
                 return value?.ToString() ?? "";
             }
+        }
+
+        /// <summary>
+        /// Calculates the progress
+        /// </summary>
+        /// <param name="step">The current step</param>
+        /// <param name="max">The max step</param>
+        /// <returns>The percentage value</returns>
+        public static double CalculateCurrentProgress(double step, double max)
+        {
+            if (max == 0)
+                return 0;
+
+            return 100 / max * step;
         }
     }
 }

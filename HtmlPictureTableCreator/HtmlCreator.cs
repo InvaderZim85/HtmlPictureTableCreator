@@ -44,6 +44,10 @@ namespace HtmlPictureTableCreator
         /// Occurs when an info was raised
         /// </summary>
         public static event GlobalHelper.InfoEvent OnInfo;
+        /// <summary>
+        /// Occurs when the progress goes on
+        /// </summary>
+        public static event GlobalHelper.ProgressEvent OnProgress;
 
         /// <summary>
         /// Creates the html table
@@ -77,7 +81,9 @@ namespace HtmlPictureTableCreator
                 if (createThumbnails)
                 {
                     ThumbnailManager.OnNewInfo += ThumbnailManagerOnOnNewInfo;
+                    ThumbnailManager.OnProgress += ThumbnailManager_OnProgress;
                     imageSizeList = ThumbnailManager.CreateThumbnails(source, thumbWidth, thumbHeight, keepRatio);
+                    ThumbnailManager.OnProgress -= ThumbnailManager_OnProgress;
                     ThumbnailManager.OnNewInfo -= ThumbnailManagerOnOnNewInfo;
                 }
 
@@ -93,6 +99,7 @@ namespace HtmlPictureTableCreator
                 foreach (var image in imageFiles)
                 {
                     OnInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create image entry {totalCount} of {imageFiles.Count}");
+                    OnProgress?.Invoke(GlobalHelper.CalculateCurrentProgress(totalCount, imageFiles.Count), 100);
                     if (count == 1)
                         htmlTable.AppendLine("<tr>");
 
@@ -146,6 +153,15 @@ namespace HtmlPictureTableCreator
             {
                 OnInfo?.Invoke(GlobalHelper.InfoType.Error, $"An error has occured. Message: {ex.Message}");
             }
+        }
+        /// <summary>
+        /// Occurs when the thumbnail manager raises the onprogress event
+        /// </summary>
+        /// <param name="value">The current value</param>
+        /// <param name="maxValue">The max value</param>
+        private static void ThumbnailManager_OnProgress(double value, double maxValue)
+        {
+            OnProgress?.Invoke(value, maxValue);
         }
 
         /// <summary>
@@ -237,6 +253,7 @@ namespace HtmlPictureTableCreator
                     foreach (var file in files)
                     {
                         OnInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create archive ({CalculatePercent(count++, files.Count)}%)");
+                        OnProgress?.Invoke(GlobalHelper.CalculateCurrentProgress(count, files.Count), 100);
                         zipFile.AddFile(file.FullName);
                     }
 

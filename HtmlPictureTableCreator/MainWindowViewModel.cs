@@ -210,6 +210,7 @@ namespace HtmlPictureTableCreator
                 KeepRatioEnabled = value.Value == (int) GlobalHelper.ImageRatio.Custom;
             }
         }
+
         /// <summary>
         /// Contains the value which indicates if there is a "fix" ratio selected
         /// </summary>
@@ -221,6 +222,58 @@ namespace HtmlPictureTableCreator
         {
             get => _keppRatioEnabled;
             set => SetField(ref _keppRatioEnabled, value);
+        }
+
+        /// <summary>
+        /// Contains the is running value
+        /// </summary>
+        private bool _isRunning;
+        /// <summary>
+        /// Gets or sets the value which indicates if the converting is running
+        /// </summary>
+        public bool IsRunning
+        {
+            get => _isRunning;
+            set => SetField(ref _isRunning, value);
+        }
+
+        /// <summary>
+        /// Contains the max value for the progress bar
+        /// </summary>
+        private double _maxValue = 1;
+        /// <summary>
+        /// Gets or sets the max value for the progress bar
+        /// </summary>
+        public double MaxValue
+        {
+            get => _maxValue;
+            set => SetField(ref _maxValue, value);
+        }
+
+        /// <summary>
+        /// Contains the current value for the progress bar
+        /// </summary>
+        private double _currentValue;
+        /// <summary>
+        /// Gets or sets the current value for the progress bar
+        /// </summary>
+        public double CurrentValue
+        {
+            get => _currentValue;
+            set => SetField(ref _currentValue, value);
+        }
+
+        /// <summary>
+        /// Contains the text for the progress bar
+        /// </summary>
+        private string _percentage = "";
+        /// <summary>
+        /// Gets or sets the percentage text for the progress bar
+        /// </summary>
+        public string Percentage
+        {
+            get => _percentage;
+            set => SetField(ref _percentage, value);
         }
 
         /// <summary>
@@ -266,7 +319,9 @@ namespace HtmlPictureTableCreator
 
             InfoText = "HTML - Picture table creator";
 
+            IsRunning = true;
             HtmlCreator.OnInfo += Helper_InfoEvent;
+            HtmlCreator.OnProgress += HtmlCreator_OnProgress;
             Task.Factory.StartNew(() =>
             {
                 var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(Source, CreateThumbnails,
@@ -282,8 +337,22 @@ namespace HtmlPictureTableCreator
                     InfoText += $"\r\n> Error | An error has occured. Message: {t.Exception.Message}";
                 }
                 HtmlCreator.OnInfo -= Helper_InfoEvent;
+                HtmlCreator.OnProgress -= HtmlCreator_OnProgress;
+                IsRunning = false;
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
+        /// <summary>
+        /// Occurs when the progress event was raised
+        /// </summary>
+        /// <param name="value">The current value</param>
+        /// <param name="maxValue">The max value</param>
+        private void HtmlCreator_OnProgress(double value, double maxValue)
+        {
+            MaxValue = maxValue;
+            CurrentValue = value;
+            Percentage = $"{value:N2}%";
+        }
+
         /// <summary>
         /// Occurs when an info message was fired
         /// </summary>

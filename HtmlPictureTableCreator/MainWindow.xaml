@@ -8,10 +8,11 @@
         Title="HTML - Picture table creator"
         Width="525"
         Height="683.016"
-        mc:Ignorable="d"
-        Loaded="MainWindow_OnLoaded">
+        Loaded="MainWindow_OnLoaded"
+        mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <xctk:InverseBoolConverter x:Key="InverseBool" />
     </Window.Resources>
     <Window.DataContext>
         <local:MainWindowViewModel />
@@ -24,7 +25,9 @@
         </Grid.RowDefinitions>
 
         <!--  Settings  -->
-        <GroupBox Grid.Row="0" Header="Settings">
+        <GroupBox Grid.Row="0"
+                  Header="Settings"
+                  IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBool}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -95,26 +98,26 @@
                                   Margin="3"
                                   VerticalAlignment="Center"
                                   IsChecked="{Binding KeepRatio}"
-                                  IsEnabled="{Binding KeepRatioEnabled}"/>
-                        
+                                  IsEnabled="{Binding KeepRatioEnabled}" />
+
                         <Label Grid.Row="1"
                                Grid.Column="0"
-                               Content="Ratio:"/>
-                        
+                               Content="Ratio:" />
+
                         <ComboBox Grid.Row="1"
                                   Grid.Column="1"
                                   Margin="3"
                                   ItemsSource="{Binding RatioList, Mode=OneWay}"
-                                  SelectedValue="{Binding SelectedRatio}"/>
-                        
+                                  SelectedValue="{Binding SelectedRatio}" />
+
                         <Label Grid.Row="2"
                                Grid.Column="0"
                                Content="Width:" />
                         <xctk:IntegerUpDown Grid.Row="2"
                                             Grid.Column="1"
                                             Margin="3"
-                                            Value="{Binding ThumbnailWidth}"
-                                            ValueChanged="ThumbnailWidth_OnValueChanged"/>
+                                            ValueChanged="ThumbnailWidth_OnValueChanged"
+                                            Value="{Binding ThumbnailWidth}" />
 
                         <Label Grid.Row="3"
                                Grid.Column="0"
@@ -122,8 +125,8 @@
                         <xctk:IntegerUpDown Grid.Row="3"
                                             Grid.Column="1"
                                             Margin="3"
-                                            Value="{Binding ThumbnailHeight}" 
-                                            ValueChanged="ThumbnailHeight_OnValueChanged"/>
+                                            ValueChanged="ThumbnailHeight_OnValueChanged"
+                                            Value="{Binding ThumbnailHeight}" />
                     </Grid>
                 </GroupBox>
 
@@ -179,15 +182,15 @@
                          IsEnabled="{Binding CreateArchive}"
                          Text="{Binding ArchiveName}" />
 
-                <Label Grid.Row="9" 
-                       Grid.Column="0" 
-                       Content="Open page:"/>
-                <CheckBox Grid.Row="9" 
+                <Label Grid.Row="9"
+                       Grid.Column="0"
+                       Content="Open page:" />
+                <CheckBox Grid.Row="9"
                           Grid.Column="1"
                           Margin="3"
                           VerticalAlignment="Center"
-                          IsChecked="{Binding OpenPage}"/>
-                
+                          IsChecked="{Binding OpenPage}" />
+
                 <StackPanel Grid.Row="10"
                             Grid.Column="1"
                             Grid.ColumnSpan="2"
@@ -212,12 +215,33 @@
 
         <!--  Info  -->
         <GroupBox Grid.Row="2" Header="Info">
-            <TextBox Margin="0,3,0,0"
-                     IsReadOnly="True"
-                     Text="{Binding InfoText}"
-                     TextChanged="TextBoxBase_OnTextChanged"
-                     TextWrapping="Wrap"
-                     VerticalScrollBarVisibility="Visible" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.Row="0"
+                         Margin="0,3,0,0"
+                         IsReadOnly="True"
+                         Text="{Binding InfoText}"
+                         TextChanged="TextBoxBase_OnTextChanged"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Visible" />
+
+                <ProgressBar Grid.Row="1"
+                             Height="20"
+                             Margin="3"
+                             Maximum="{Binding MaxValue}"
+                             Minimum="0"
+                             Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             Value="{Binding CurrentValue}" />
+
+                <Label Grid.Row="1"
+                       HorizontalAlignment="Center"
+                       Content="{Binding Percentage}"
+                       Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
         </GroupBox>
     </Grid>
 </Window>

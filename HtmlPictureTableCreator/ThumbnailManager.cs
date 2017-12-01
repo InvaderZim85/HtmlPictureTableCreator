@@ -13,6 +13,11 @@ namespace HtmlPictureTableCreator
         /// </summary>
         public static event GlobalHelper.InfoEvent OnNewInfo;
         /// <summary>
+        /// Occurs when the progress goes on
+        /// </summary>
+        public static event GlobalHelper.ProgressEvent OnProgress;
+
+        /// <summary>
         /// Contains the name of the thumbnail folder
         /// </summary>
         private const string ThumbnailFolderName = "thumbnails";
@@ -49,9 +54,11 @@ namespace HtmlPictureTableCreator
 
             // Step 4: Itterate through the image list and create for every image a thumbnail
             var count = 1;
+
             foreach (var image in imagesFiles)
             {
-                OnNewInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create thumbnail {count++} of {imagesFiles.Count}");
+                OnProgress?.Invoke(GlobalHelper.CalculateCurrentProgress(count++, imagesFiles.Count), 100);
+                OnNewInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create thumbnail {count} of {imagesFiles.Count}");
 
                 var imageSize = new ImageSize(width, height);
                 if (keepRatio || height == 0 && width != 0 || height != 0 && width == 0)
