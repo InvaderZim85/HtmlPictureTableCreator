@@ -95,9 +95,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CustomFooterWindow.xaml.cs">
+      <DependentUpon>CustomFooterWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GlobalHelper.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ThumbnailManager.cs" />
+    <Page Include="CustomFooterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
