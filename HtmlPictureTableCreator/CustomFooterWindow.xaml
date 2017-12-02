@@ -8,5 +8,28 @@
         Width="300"
         Height="300"
         mc:Ignorable="d">
-    <Grid />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DataGrid Grid.Row="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Test" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+        <StackPanel Grid.Row="1"
+                    FlowDirection="RightToLeft"
+                    Orientation="Horizontal">
+            <Button Width="50"
+                    Margin="3"
+                    Content="Cancel" />
+            <Button Width="50"
+                    Margin="3"
+                    Content="Save" />
+        </StackPanel>
+    </Grid>
 </Window>
