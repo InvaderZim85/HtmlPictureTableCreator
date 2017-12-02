@@ -6,8 +6,9 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using HtmlPictureTableCreator.DataObjects;
 
-namespace HtmlPictureTableCreator
+namespace HtmlPictureTableCreator.Global
 {
     public static class GlobalHelper
     {
@@ -75,7 +76,8 @@ namespace HtmlPictureTableCreator
         /// </summary>
         /// <param name="path">The path of the folder</param>
         /// <returns>The image files</returns>
-        public static List<FileInfo> GetImageFiles(string path)
+
+        public static List<ImageModel> GetImageFiles(string path)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path));
@@ -83,7 +85,8 @@ namespace HtmlPictureTableCreator
             var dirInfo = new DirectoryInfo(path);
             var tmpFiles = dirInfo.GetFiles();
 
-            return tmpFiles.Where(w => FileTypes.Contains(w.Extension.ToLower())).ToList();
+            return tmpFiles.Where(w => FileTypes.Contains(w.Extension.ToLower())).Select(s => new ImageModel(s))
+                .ToList();
         }
 
         /// <summary>

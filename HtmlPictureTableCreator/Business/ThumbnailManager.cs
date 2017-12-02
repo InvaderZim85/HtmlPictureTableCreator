@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using HtmlPictureTableCreator.DataObjects;
+using HtmlPictureTableCreator.Global;
 
-namespace HtmlPictureTableCreator
+namespace HtmlPictureTableCreator.Business
 {
     public static class ThumbnailManager
     {
@@ -62,13 +63,13 @@ namespace HtmlPictureTableCreator
 
                 var imageSize = new ImageSize(width, height);
                 if (keepRatio || height == 0 && width != 0 || height != 0 && width == 0)
-                    imageSize = CalculateImageSize(image, width, height);
+                    imageSize = CalculateImageSize(image.File, width, height);
 
-                var newImage = GlobalHelper.ResizeImage(image, imageSize.Width, imageSize.Height);
+                var newImage = GlobalHelper.ResizeImage(image.File, imageSize.Width, imageSize.Height);
 
-                newImage.Save(Path.Combine(source, ThumbnailFolderName, image.Name));
+                newImage.Save(Path.Combine(source, ThumbnailFolderName, image.File.Name));
 
-                result.Add(image.Name, imageSize);
+                result.Add(image.File.Name, imageSize);
             }
 
             return result;

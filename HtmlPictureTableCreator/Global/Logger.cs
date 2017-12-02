@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using NLog;
 
-namespace HtmlPictureTableCreator
+namespace HtmlPictureTableCreator.Global
 {
     public static class Logger
     {
