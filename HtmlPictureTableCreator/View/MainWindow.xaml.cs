@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using HtmlPictureTableCreator.ViewModel;
 
-namespace HtmlPictureTableCreator
+namespace HtmlPictureTableCreator.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

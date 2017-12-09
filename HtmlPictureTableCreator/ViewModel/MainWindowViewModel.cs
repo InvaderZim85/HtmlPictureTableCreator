@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using HtmlPictureTableCreator.Business;
 using HtmlPictureTableCreator.DataObjects;
+using HtmlPictureTableCreator.Global;
+using HtmlPictureTableCreator.View;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using WpfUtility.Services;
 
-namespace HtmlPictureTableCreator
+namespace HtmlPictureTableCreator.ViewModel
 {
     public class MainWindowViewModel : ObservableObject
     {
+        #region Properties for the view
         /// <summary>
         /// Contains the source path
         /// </summary>
@@ -137,8 +141,13 @@ namespace HtmlPictureTableCreator
         public ComboBoxItem ImageFooter
         {
             get => _imageFooter;
-            set => SetField(ref _imageFooter, value);
+            set
+            {
+                SetField(ref _imageFooter, value);
+                OnPropertyChanged(nameof(IsCustomFooter));
+            }
         }
+
         /// <summary>
         /// Contains the info text
         /// </summary>
@@ -275,6 +284,16 @@ namespace HtmlPictureTableCreator
             get => _percentage;
             set => SetField(ref _percentage, value);
         }
+        
+        /// <summary>
+        /// Gets the custom footer flag
+        /// </summary>
+        public bool IsCustomFooter => (ImageFooter?.Value ?? 0) == 4;
+        #endregion
+        /// <summary>
+        /// Contains the image list
+        /// </summary>
+        private List<ImageModel> _imageList = new List<ImageModel>();
 
         /// <summary>
         /// The start command
@@ -288,6 +307,11 @@ namespace HtmlPictureTableCreator
         /// The browse command
         /// </summary>
         public ICommand BrowseCommand => new DelegateCommand(Browse);
+        /// <summary>
+        /// The command for the custom footer
+        /// </summary>
+        public ICommand CustomFooterCommand => new DelegateCommand(CustomFooter);
+
         /// <summary>
         /// Inits the view model
         /// </summary>
@@ -319,12 +343,19 @@ namespace HtmlPictureTableCreator
 
             InfoText = "HTML - Picture table creator";
 
+            if (_imageList == null || _imageList.Count == 0)
+            {
+                InfoText += "\r\n No pictures available.";
+                return;
+            }
+
+
             IsRunning = true;
             HtmlCreator.OnInfo += Helper_InfoEvent;
             HtmlCreator.OnProgress += HtmlCreator_OnProgress;
             Task.Factory.StartNew(() =>
             {
-                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(Source, CreateThumbnails,
+                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(_imageList, Source, CreateThumbnails,
                     ThumbnailHeight,
                     ThumbnailWidth, KeepRatioEnabled && KeepRatio, HeaderText, BlankTarget, ColumnCount,
                     (HtmlCreator.FooterType) ImageFooter.Value, CreateArchive, ArchiveName, OpenPage));
@@ -352,7 +383,6 @@ namespace HtmlPictureTableCreator
             CurrentValue = value;
             Percentage = $"{value:N2}%";
         }
-
         /// <summary>
         /// Occurs when an info message was fired
         /// </summary>
@@ -360,8 +390,18 @@ namespace HtmlPictureTableCreator
         /// <param name="message">The message</param>
         private void Helper_InfoEvent(GlobalHelper.InfoType infoType, string message)
         {
+            WriteInfo(infoType, message);
+        }
+        /// <summary>
+        /// Writes an info message
+        /// </summary>
+        /// <param name="infoType">The info type</param>
+        /// <param name="message">The message</param>
+        private void WriteInfo(GlobalHelper.InfoType infoType, string message)
+        {
             InfoText += $"\r\n> {infoType.ToString()} | {message}";
         }
+
 
         /// <summary>
         /// Resets the settings
@@ -395,6 +435,7 @@ namespace HtmlPictureTableCreator
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 Source = dialog.FileName;
+                LoadImages();
             }
         }
         /// <summary>
@@ -448,6 +489,29 @@ namespace HtmlPictureTableCreator
                 OnPropertyChanged(nameof(ThumbnailWidth));
             }
 
+        }
+
+        /// <summary>
+        /// Loads the images
+        /// </summary>
+        private void LoadImages()
+        {
+            if (!string.IsNullOrEmpty(Source))
+            {
+                _imageList = GlobalHelper.GetImageFiles(Source);
+                WriteInfo(GlobalHelper.InfoType.Info, $"{_imageList.Count} images found.");
+            }
+        }
+
+        /// <summary>
+        /// Opens a window where the user can create a custom footer
+        /// </summary>
+        private void CustomFooter()
+        {
+            var dialog = new CustomImageFooterWindow(_imageList);
+
+            dialog.ShowDialog();
+            _imageList = dialog.ImageList;
         }
     }
 }
