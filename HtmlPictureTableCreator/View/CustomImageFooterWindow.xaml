@@ -1,0 +1,185 @@
+﻿<Window
+    x:Class="HtmlPictureTableCreator.View.CustomImageFooterWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:global="clr-namespace:HtmlPictureTableCreator.Global"
+    xmlns:local="clr-namespace:HtmlPictureTableCreator.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:HtmlPictureTableCreator.ViewModel"
+    Title="Custom footer"
+    Width="300"
+    Height="300"
+    mc:Ignorable="d">
+    <Window.DataContext>
+        <viewModel:CustomImageFooterWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <global:UriToCachedImageConverter x:Key="CachedImageConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <GroupBox
+            Grid.Row="0"
+            Grid.Column="0"
+            Header="{Binding Page}">
+            <Image Source="{Binding CurrentImage.ImageUri, Converter={StaticResource CachedImageConverter}}" />
+        </GroupBox>
+
+        <!--  Movement  -->
+        <Grid
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button
+                    Width="30"
+                    Margin="3"
+                    Command="{Binding FirstCommand}"
+                    Content="&lt;&lt;" />
+                <Button
+                    Width="30"
+                    Margin="3"
+                    Command="{Binding PreviousCommand}"
+                    Content="&lt;" />
+                <Button
+                    Width="30"
+                    Margin="3"
+                    Command="{Binding NextCommand}"
+                    Content="&gt;" />
+                <Button
+                    Width="30"
+                    Margin="3"
+                    Command="{Binding LastCommand}"
+                    Content="&gt;&gt;" />
+            </StackPanel>
+
+        </Grid>
+
+        <!--  Footer  -->
+        <Grid
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Label
+                Grid.Column="0"
+                Margin="3"
+                Content="Footer:" />
+            <TextBox
+                Grid.Column="1"
+                Margin="3"
+                Text="{Binding Footer}" />
+            <Button
+                Grid.Column="2"
+                Width="50"
+                Margin="3"
+                Command="{Binding ResetCommand}"
+                Content="Reset" />
+            <Button
+                Grid.Column="3"
+                Width="50"
+                Margin="3"
+                Click="ButtonClose_Click"
+                Content="Close" />
+
+        </Grid>
+
+        <GroupBox
+            Grid.Row="0"
+            Grid.Column="1"
+            Header="Details">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Content="Name:" />
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsReadOnly="True"
+                    Text="{Binding Name, Mode=OneWay}" />
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="File type:" />
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsReadOnly="True"
+                    Text="{Binding Extension, Mode=OneWay}" />
+
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Content="Size:" />
+                <TextBox
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsReadOnly="True"
+                    Text="{Binding Size, Mode=OneWay}" />
+
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Content="Date:" />
+                <TextBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsReadOnly="True"
+                    Text="{Binding Date, Mode=OneWay}" />
+
+                <Label
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Content="Dimension:" />
+
+                <TextBox
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsReadOnly="True"
+                    Text="{Binding Dimension, Mode=OneWay}" />
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</Window>

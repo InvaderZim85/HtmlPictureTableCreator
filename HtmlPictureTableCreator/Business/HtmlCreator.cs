@@ -58,7 +58,8 @@ namespace HtmlPictureTableCreator.Business
         /// <summary>
         /// Creates the html table
         /// </summary>
-        /// <param name="source">The source path</param>
+        /// <param name="imageFiles">The image files</param>
+        /// <param name="source">The path of the source folder</param>
         /// <param name="createThumbnails">The value which indicates if the user want to use thumbnails</param>
         /// <param name="thumbHeight">The height of the thumbnail</param>
         /// <param name="thumbWidth">The width of the thumbnail</param>
@@ -70,34 +71,25 @@ namespace HtmlPictureTableCreator.Business
         /// <param name="createArchive">true if the user wants to create a archive</param>
         /// <param name="archiveName">The name of the archive</param>
         /// <param name="openPage">true when the pages should be opened at the end</param>
-        public static void CreateHtmlTable(string source, bool createThumbnails, int thumbHeight, int thumbWidth,
+        public static void CreateHtmlTable(List<ImageModel> imageFiles, string source, bool createThumbnails, int thumbHeight, int thumbWidth,
             bool keepRatio, string headerText, bool blankTarget, int columnCount, FooterType imageFooter, bool createArchive, string archiveName, bool openPage)
         {
             try
             {
                 archiveName = CreateArchiveName(archiveName ?? "");
 
-                if (string.IsNullOrEmpty(source))
-                {
-                    OnInfo?.Invoke(GlobalHelper.InfoType.Error, "The source path is null or empty.");
-                    return;
-                }
-
                 var imageSizeList = new Dictionary<string, ImageSize>();
                 if (createThumbnails)
                 {
                     ThumbnailManager.OnNewInfo += ThumbnailManagerOnOnNewInfo;
                     ThumbnailManager.OnProgress += ThumbnailManager_OnProgress;
-                    imageSizeList = ThumbnailManager.CreateThumbnails(source, thumbWidth, thumbHeight, keepRatio);
+                    imageSizeList = ThumbnailManager.CreateThumbnails(imageFiles, source, thumbWidth, thumbHeight, keepRatio);
                     ThumbnailManager.OnProgress -= ThumbnailManager_OnProgress;
                     ThumbnailManager.OnNewInfo -= ThumbnailManagerOnOnNewInfo;
                 }
 
                 var htmlTable = new StringBuilder("");
                 var target = blankTarget ? "target=\"_blank\"" : "";
-
-                var imageFiles = GlobalHelper.GetImageFiles(source);
-
 
                 var count = 1;
                 var totalCount = 1;
@@ -124,7 +116,7 @@ namespace HtmlPictureTableCreator.Business
                         : $"<img src=\"{image.File.Name}\" {imgSizeHtml} alt=\"{image.File.Name}\" title=\"{image.File.Name}\">";
 
                     htmlTable.AppendLine(
-                        $"<td><a href=\"{image.File.Name}\" {target}>{thumbnail}</a>{CreateImageFooter(image.File, imageFooter, totalCount, imageFiles.Count)}</td>");
+                        $"<td><a href=\"{image.File.Name}\" {target}>{thumbnail}</a>{CreateImageFooter(image, imageFooter, totalCount, imageFiles.Count)}</td>");
 
                     count++;
                     totalCount++;
@@ -179,7 +171,7 @@ namespace HtmlPictureTableCreator.Business
         /// <param name="totalCount">The total count</param>
         /// <returns>The html footer for the image</returns>
         /// <exception cref="ArgumentNullException"/>
-        private static string CreateImageFooter(FileInfo imageFile, FooterType type, int count, int totalCount )
+        private static string CreateImageFooter(ImageModel imageFile, FooterType type, int count, int totalCount )
         {
             if (imageFile == null)
                 throw new ArgumentNullException(nameof(imageFile));
@@ -189,21 +181,24 @@ namespace HtmlPictureTableCreator.Business
             switch (type)
             {
                 case FooterType.ImageName:
-                    stringBuilder.Append(imageFile.Name);
+                    stringBuilder.Append(imageFile.File.Name);
                     break;
                 case FooterType.Numbering:
                     stringBuilder.Append($"{count} of {totalCount}");
                     break;
                 case FooterType.FileDetails:
-                    var image = Image.FromFile(imageFile.FullName);
+                    var image = Image.FromFile(imageFile.File.FullName);
                     var detailTable = new StringBuilder("<table border='0' cellspacing='0' cellpadding='3'>");
-                    detailTable.AppendLine($"<tr><td align='right'>File:</td><td>{imageFile.Name}</td></tr>");
-                    detailTable.AppendLine($"<tr><td align='right'>Date:</td><td>{imageFile.CreationTime:g}</td></tr>");
+                    detailTable.AppendLine($"<tr><td align='right'>File:</td><td>{imageFile.File.Name}</td></tr>");
+                    detailTable.AppendLine($"<tr><td align='right'>Date:</td><td>{imageFile.File.CreationTime:g}</td></tr>");
                     detailTable.AppendLine($"<tr><td align='right'>Size:</td><td>{image.Width}x{image.Height}</td></tr>");
                     detailTable.AppendLine(
-                        $"<tr><td align='right'>File size:</td><td>{(double) imageFile.Length / 1024 / 1024:N2} MB</td></tr>");
+                        $"<tr><td align='right'>File size:</td><td>{(double) imageFile.File.Length / 1024 / 1024:N2} MB</td></tr>");
                     detailTable.AppendLine("</table>");
                     stringBuilder.Append(detailTable);
+                    break;
+                case FooterType.Custom:
+                    stringBuilder.AppendLine($"{imageFile.Footer}");
                     break;
                 default:
                     stringBuilder.Clear();
@@ -225,7 +220,7 @@ namespace HtmlPictureTableCreator.Business
             page = page.Replace("[TITLE]", title);
             page = page.Replace("[TABLE]", table);
             page = page.Replace("[COPYRIGHT]",
-                $"&copy; {DateTime.Now.Year}. Created with <i>HTML - Picture table creator</i>");
+                $"&copy; {DateTime.Now:g} - Created with <i><a href='https://github.com/InvaderZim85/HtmlPictureTableCreator'>HTML - Picture table creator</a></i>");
             page = page.Replace("[ARCHIVE]", archive);
 
             return page;

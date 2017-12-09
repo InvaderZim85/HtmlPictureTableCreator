@@ -25,6 +25,7 @@ namespace HtmlPictureTableCreator.Business
         /// <summary>
         /// Creates thumbnails for the images, wich are stored in the given source
         /// </summary>
+        /// <param name="imageFiles">The image files</param>
         /// <param name="source">The path of the source folder</param>
         /// <param name="width">The width of the thumbnail</param>
         /// <param name="height">The height of the thumbnail</param>
@@ -32,12 +33,9 @@ namespace HtmlPictureTableCreator.Business
         /// <returns>A dictionary with the image size for every image. The key is the name of the image</returns>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="DirectoryNotFoundException"/>
-        public static Dictionary<string, ImageSize> CreateThumbnails(string source, int width, int height, bool keepRatio)
+        public static Dictionary<string, ImageSize> CreateThumbnails(List<ImageModel> imageFiles, string source, int width, int height, bool keepRatio)
         {
             // Step 1: Check the parameters
-            if (string.IsNullOrEmpty(source))
-                throw new ArgumentNullException(nameof(source));
-
             if (!Directory.Exists(source))
                 throw new DirectoryNotFoundException("The specified source doesn't exist.");
 
@@ -50,16 +48,13 @@ namespace HtmlPictureTableCreator.Business
                 return result;
             }
 
-            // Step 3: Load the images
-            var imagesFiles = GlobalHelper.GetImageFiles(source);
-
             // Step 4: Itterate through the image list and create for every image a thumbnail
             var count = 1;
 
-            foreach (var image in imagesFiles)
+            foreach (var image in imageFiles)
             {
-                OnProgress?.Invoke(GlobalHelper.CalculateCurrentProgress(count++, imagesFiles.Count), 100);
-                OnNewInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create thumbnail {count} of {imagesFiles.Count}");
+                OnProgress?.Invoke(GlobalHelper.CalculateCurrentProgress(count++, imageFiles.Count), 100);
+                OnNewInfo?.Invoke(GlobalHelper.InfoType.Info, $"Create thumbnail {count} of {imageFiles.Count}");
 
                 var imageSize = new ImageSize(width, height);
                 if (keepRatio || height == 0 && width != 0 || height != 0 && width == 0)

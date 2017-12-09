@@ -343,12 +343,19 @@ namespace HtmlPictureTableCreator.ViewModel
 
             InfoText = "HTML - Picture table creator";
 
+            if (_imageList == null || _imageList.Count == 0)
+            {
+                InfoText += "\r\n No pictures available.";
+                return;
+            }
+
+
             IsRunning = true;
             HtmlCreator.OnInfo += Helper_InfoEvent;
             HtmlCreator.OnProgress += HtmlCreator_OnProgress;
             Task.Factory.StartNew(() =>
             {
-                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(Source, CreateThumbnails,
+                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(_imageList, Source, CreateThumbnails,
                     ThumbnailHeight,
                     ThumbnailWidth, KeepRatioEnabled && KeepRatio, HeaderText, BlankTarget, ColumnCount,
                     (HtmlCreator.FooterType) ImageFooter.Value, CreateArchive, ArchiveName, OpenPage));
@@ -501,12 +508,10 @@ namespace HtmlPictureTableCreator.ViewModel
         /// </summary>
         private void CustomFooter()
         {
-            var dialog = new CustomFooterWindow(_imageList);
+            var dialog = new CustomImageFooterWindow(_imageList);
 
-            if (dialog.ShowDialog() == true)
-            {
-                _imageList = dialog.ImageList;
-            }
+            dialog.ShowDialog();
+            _imageList = dialog.ImageList;
         }
     }
 }

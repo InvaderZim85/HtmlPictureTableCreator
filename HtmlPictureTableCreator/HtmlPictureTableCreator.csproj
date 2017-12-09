@@ -96,11 +96,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataObjects\ImageModel.cs" />
-    <Compile Include="ViewModel\CustomFooterWindowViewModel.cs" />
+    <Compile Include="Global\UriToCachedImageConverter.cs" />
+    <Compile Include="ViewModel\CustomImageFooterWindowViewModel.cs" />
     <Compile Include="Global\GlobalHelper.cs" />
     <Compile Include="Global\Logger.cs" />
     <Compile Include="Business\ThumbnailManager.cs" />
-    <Page Include="View\CustomFooterWindow.xaml">
+    <Page Include="View\CustomImageFooterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -120,8 +121,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>HtmlResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="View\CustomFooterWindow.xaml.cs">
-      <DependentUpon>CustomFooterWindow.xaml</DependentUpon>
+    <Compile Include="View\CustomImageFooterWindow.xaml.cs">
+      <DependentUpon>CustomImageFooterWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
