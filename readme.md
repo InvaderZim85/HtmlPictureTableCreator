@@ -54,6 +54,7 @@ Following NuGet-Packages are used:
 The tool is in a very early stadium and some *features* are missing :) The following things are on my todo list:
 - **General**
     - Logging of exceptions into a file via NLog. At the moment the logging is really *rudimentary*
+    - ~~Possibility to add custom footers~~
 - **Design**
     - Color-Chooser for the background / foreground color of the page
     - Font-Dialog to choose a another font
