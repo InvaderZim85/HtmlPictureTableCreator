@@ -29,6 +29,7 @@ The usage is really straigth forward:
     - Image name: The name of the image
     - Numbering: Numbering of the images e.g. 1/10, 2/10 and so on
     - Image details: Shows details like the image name, the original size, the file size and the creation date
+    - Custom: If you choose *Custom*, you can click on the button *Footer* to add a custom footer for every image (The button *Footer* is only enabled if you choose *Custom*).
 7. Choose *Create archive* to create a zip-archive. The archive will be added as a link to the end of the page.
 8. Insert a name for the archive (spaces will be replaced by a underscore: "My Archive" > "My_Archive")
 9. Choose *Open page* if the tool should open the page in your default browser at the end.
