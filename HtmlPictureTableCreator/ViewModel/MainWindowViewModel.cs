@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 using HtmlPictureTableCreator.Business;
 using HtmlPictureTableCreator.DataObjects;
 using HtmlPictureTableCreator.Global;
@@ -15,115 +16,141 @@ namespace HtmlPictureTableCreator.ViewModel
     {
         #region Properties for the view
         /// <summary>
-        /// Contains the source path
+        /// Contains the settings
         /// </summary>
-        private string _source;
+        private HtmlPageSettingsModel _settings;
+        
         /// <summary>
         /// Gets or sets the source path
         /// </summary>
         public string Source
         {
-            get => _source;
-            set => SetField(ref _source, value);
+            get => _settings?.Source ?? "";
+            set
+            {
+                if (_settings != null && _settings.Source != value)
+                {
+                    _settings.Source = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the value which indicates if the user wants to create thumbnails
-        /// </summary>
-        private bool _createThumbnails = true;
+        
         /// <summary>
         /// Gets or sets the CreateThumbnails value
         /// </summary>
         public bool CreateThumbnails
         {
-            get => _createThumbnails;
-            set => SetField(ref _createThumbnails, value);
+            get => _settings?.CreateThumbnails ?? false;
+            set
+            {
+                if (_settings != null && _settings.CreateThumbnails != value)
+                {
+                    _settings.CreateThumbnails = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the thumbnail width
-        /// </summary>
-        private int _thumbnailWidth;
+        
         /// <summary>
         /// Gets or sets the thumbnail width
         /// </summary>
         public int ThumbnailWidth
         {
-            get => _thumbnailWidth;
+            get => _settings?.Width ?? 0;
             set
             {
                 if (KeepRatio && value != 0)
                 {
                     ThumbnailHeight = 0;
                 }
-                SetField(ref _thumbnailWidth, value);
+
+                if (_settings == null || _settings.Width == value) return;
+                _settings.Width = value;
+                OnPropertyChanged();
             }
         }
 
-        /// <summary>
-        /// Contains the thumbnail height
-        /// </summary>
-        private int _thumbnailHeight;
+        
         /// <summary>
         /// Gets or sets the thumbnail height
         /// </summary>
         public int ThumbnailHeight
         {
-            get => _thumbnailHeight;
+            get => _settings?.Height ?? 0;
             set
             {
                 if (KeepRatio && value != 0)
                     ThumbnailWidth = 0;
 
-                SetField(ref _thumbnailHeight, value);
+                if (_settings == null || _settings.Height == value) return;
+                _settings.Height = value;
+                OnPropertyChanged();
             }
         }
 
-        /// <summary>
-        /// Contains the keep ratio value
-        /// </summary>
-        private bool _keepRatio;
         /// <summary>
         /// Gets or sets the keep ratio value
         /// </summary>
         public bool KeepRatio
         {
-            get => _keepRatio;
-            set => SetField(ref _keepRatio, value);
+            get => _settings?.KeepRatio ?? false;
+            set
+            {
+                if (_settings != null && _settings.KeepRatio != value)
+                {
+                    _settings.KeepRatio = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the column count
-        /// </summary>
-        private int _columnCount = 3;
+        
         /// <summary>
         /// Gets or sets the column count
         /// </summary>
         public int ColumnCount
         {
-            get => _columnCount;
-            set => SetField(ref _columnCount, value);
+            get => _settings?.ColumnCount ?? 3;
+            set
+            {
+                if (_settings != null && _settings.ColumnCount != value)
+                {
+                    _settings.ColumnCount = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the header text
-        /// </summary>
-        private string _headerText = "";
+        
         /// <summary>
         /// Gets or sets the header text
         /// </summary>
         public string HeaderText
         {
-            get => _headerText;
-            set => SetField(ref _headerText, value);
+            get => _settings?.Header ?? "";
+            set
+            {
+                if (_settings != null && _settings.Header != value)
+                {
+                    _settings.Header = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the blank target value
-        /// </summary>
-        private bool _blankTarget;
+        
         /// <summary>
         /// Gets or sets the blank target value
         /// </summary>
         public bool BlankTarget
         {
-            get => _blankTarget;
-            set => SetField(ref _blankTarget, value);
+            get => _settings?.BlankTarget ?? false;
+            set
+            {
+                if (_settings != null && _settings.BlankTarget != value)
+                {
+                    _settings.BlankTarget = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         /// <summary>
@@ -132,22 +159,25 @@ namespace HtmlPictureTableCreator.ViewModel
         public List<ComboBoxItem> ImageFooterList { get; } = new List<ComboBoxItem>();
 
         /// <summary>
-        /// Contains the image footer value
-        /// </summary>
-        private ComboBoxItem _imageFooter = new ComboBoxItem("Nothing", 0);
-        /// <summary>
         /// Gets or sets the image footer value
         /// </summary>
         public ComboBoxItem ImageFooter
         {
-            get => _imageFooter;
+            get => _settings == null
+                ? new ComboBoxItem(GlobalHelper.FooterType.Nothing.GetDescription(),
+                    (int) GlobalHelper.FooterType.Nothing)
+                : new ComboBoxItem(_settings.FooterType.GetDescription(), (int) _settings.FooterType);
             set
             {
-                SetField(ref _imageFooter, value);
+                if (_settings != null && _settings.FooterType != (GlobalHelper.FooterType) value.Value)
+                {
+                    _settings.FooterType = (GlobalHelper.FooterType) value.Value;
+                    OnPropertyChanged();
+                }
+
                 OnPropertyChanged(nameof(IsCustomFooter));
             }
         }
-
         /// <summary>
         /// Contains the info text
         /// </summary>
@@ -160,41 +190,53 @@ namespace HtmlPictureTableCreator.ViewModel
             get => _infoText;
             set => SetField(ref _infoText, value);
         }
-        /// <summary>
-        /// Contains the create archive value
-        /// </summary>
-        private bool _createArchive;
+        
         /// <summary>
         /// Gets or sets the create archive value
         /// </summary>
         public bool CreateArchive
         {
-            get => _createArchive;
-            set => SetField(ref _createArchive, value);
+            get => _settings?.CreateArchive ?? false;
+            set
+            {
+                if (_settings != null && _settings.CreateArchive != value)
+                {
+                    _settings.CreateArchive = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the name of the archive
-        /// </summary>
-        private string _archiveName;
+        
         /// <summary>
         /// Gets or sets the name of the archive
         /// </summary>
         public string ArchiveName
         {
-            get => _archiveName;
-            set => SetField(ref _archiveName, value);
+            get => _settings?.ArchiveName ?? "";
+            set
+            {
+                if (_settings != null && _settings.ArchiveName != value)
+                {
+                    _settings.ArchiveName = value;
+                    OnPropertyChanged();
+                }
+            }
         }
-        /// <summary>
-        /// Contains the open page value
-        /// </summary>
-        private bool _openPage = true;
+
         /// <summary>
         /// Gets or sets the open page value
         /// </summary>
         public bool OpenPage
         {
-            get => _openPage;
-            set => SetField(ref _openPage, value);
+            get => _settings?.OpenPage ?? false;
+            set
+            {
+                if (_settings != null && _settings.OpenPage != value)
+                {
+                    _settings.OpenPage = value;
+                    OnPropertyChanged();
+                }
+            }
         }
         /// <summary>
         /// Contains the image ratio list
@@ -202,21 +244,67 @@ namespace HtmlPictureTableCreator.ViewModel
         public List<ComboBoxItem> RatioList { get; } = new List<ComboBoxItem>();
 
         /// <summary>
-        /// Contains the selected ratio entry
-        /// </summary>
-        private ComboBoxItem _selectedRatio =
-            new ComboBoxItem(GlobalHelper.GetEnumDescription(GlobalHelper.ImageRatio.Custom),
-                (int) GlobalHelper.ImageRatio.Custom);
-        /// <summary>
         /// Gets or sets the selected ratio entry
         /// </summary>
         public ComboBoxItem SelectedRatio
         {
-            get => _selectedRatio;
+            get => _settings == null
+                ? new ComboBoxItem(GlobalHelper.ImageRatio.Custom.GetDescription(),
+                    (int) GlobalHelper.ImageRatio.Custom)
+                : new ComboBoxItem(_settings.ImageRatio.GetDescription(), (int) _settings.ImageRatio);
             set
             {
-                SetField(ref _selectedRatio, value);
+                if (_settings != null && _settings.ImageRatio != (GlobalHelper.ImageRatio)value.Value)
+                {
+                    _settings.ImageRatio = (GlobalHelper.ImageRatio)value.Value;
+                    OnPropertyChanged();
+                }
                 KeepRatioEnabled = value.Value == (int) GlobalHelper.ImageRatio.Custom;
+            }
+        }
+        /// <summary>
+        /// Gets or sets the value which indicates if the user wants to use a custom color
+        /// </summary>
+        public bool CustomColor
+        {
+            get => _settings?.CustomColors ?? false;
+            set
+            {
+                if (_settings != null && _settings.CustomColors != value)
+                {
+                    _settings.CustomColors = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        /// <summary>
+        /// Gets or sets the background color
+        /// </summary>
+        public Color BackgroundColor
+        {
+            get => _settings?.Background ?? Color.FromRgb(0, 0, 0);
+            set
+            {
+                if (_settings != null && _settings.Background != value)
+                {
+                    _settings.Background = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        /// <summary>
+        /// Gets or sets the foreground color
+        /// </summary>
+        public Color ForegroundColod
+        {
+            get => _settings?.Foreground ?? Color.FromRgb(255, 255, 255);
+            set
+            {
+                if (_settings != null && _settings.Foreground != value)
+                {
+                    _settings.Foreground = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -288,7 +376,7 @@ namespace HtmlPictureTableCreator.ViewModel
         /// <summary>
         /// Gets the custom footer flag
         /// </summary>
-        public bool IsCustomFooter => (ImageFooter?.Value ?? 0) == 4;
+        public bool IsCustomFooter => (ImageFooter?.Value ?? 0) == (int)GlobalHelper.FooterType.Custom;
         #endregion
         /// <summary>
         /// Contains the image list
@@ -317,17 +405,19 @@ namespace HtmlPictureTableCreator.ViewModel
         /// </summary>
         public void InitViewModel()
         {
-            foreach (var value in Enum.GetValues(typeof(HtmlCreator.FooterType)))
+            foreach (var value in Enum.GetValues(typeof(GlobalHelper.FooterType)))
             {
                 ImageFooterList.Add(
-                    new ComboBoxItem(GlobalHelper.GetEnumDescription((HtmlCreator.FooterType) value), (int) value));
+                    new ComboBoxItem(((GlobalHelper.FooterType) value).GetDescription(), (int) value));
             }
 
             foreach (var value in Enum.GetValues(typeof(GlobalHelper.ImageRatio)))
             {
                 RatioList.Add(
-                    new ComboBoxItem(GlobalHelper.GetEnumDescription((GlobalHelper.ImageRatio) value), (int) value));
+                    new ComboBoxItem(((GlobalHelper.ImageRatio) value).GetDescription(), (int) value));
             }
+
+            _settings = SettingsManager.LoadSettings();
         }
 
         /// <summary>
@@ -355,10 +445,7 @@ namespace HtmlPictureTableCreator.ViewModel
             HtmlCreator.OnProgress += HtmlCreator_OnProgress;
             Task.Factory.StartNew(() =>
             {
-                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(_imageList, Source, CreateThumbnails,
-                    ThumbnailHeight,
-                    ThumbnailWidth, KeepRatioEnabled && KeepRatio, HeaderText, BlankTarget, ColumnCount,
-                    (HtmlCreator.FooterType) ImageFooter.Value, CreateArchive, ArchiveName, OpenPage));
+                var task = Task.Factory.StartNew(() => HtmlCreator.CreateHtmlTable(_settings, _imageList));
 
                 task.Wait();
             }).ContinueWith(t =>
@@ -480,12 +567,12 @@ namespace HtmlPictureTableCreator.ViewModel
 
             if (height)
             {
-                _thumbnailHeight = (int) result;
+                ThumbnailHeight = (int) result;
                 OnPropertyChanged(nameof(ThumbnailHeight));
             }
             else
             {
-                _thumbnailWidth = (int) result;
+                ThumbnailWidth = (int) result;
                 OnPropertyChanged(nameof(ThumbnailWidth));
             }
 

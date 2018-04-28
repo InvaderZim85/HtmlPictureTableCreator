@@ -3,18 +3,13 @@
         <title>[TITLE]</title>
         <style>
             body {
-                background-color: black;
-                color: white;
+                background-color: [BACKGROUND];
+                color: [FOREGROUND];
                 font-family: Calibri, Consolas, Arial;
             }
         
             table {
                 font-size: 100%;
-            }
-        
-            th {
-                background-color: #888888;
-                color: white;
             }
         
             td.head {

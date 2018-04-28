@@ -6,7 +6,10 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using HtmlPictureTableCreator.DataObjects;
+using Color = System.Windows.Media.Color;
 
 namespace HtmlPictureTableCreator.Global
 {
@@ -54,6 +57,38 @@ namespace HtmlPictureTableCreator.Global
         }
 
         /// <summary>
+        /// The different footer types
+        /// </summary>
+        public enum FooterType
+        {
+            /// <summary>
+            /// Show nothing
+            /// </summary>
+            [Description("Nothing")]
+            Nothing = 0,
+            /// <summary>
+            /// Show the image name
+            /// </summary>
+            [Description("Image name")]
+            ImageName = 1,
+            /// <summary>
+            /// Shows the numbering
+            /// </summary>
+            [Description("Numbering")]
+            Numbering = 2,
+            /// <summary>
+            /// Shows image details like file size, date, etc.
+            /// </summary>
+            [Description("Image details")]
+            FileDetails = 3,
+            /// <summary>
+            /// Gives the user the possibility to create a custom footer for every image
+            /// </summary>
+            [Description("Custom footer")]
+            Custom = 4
+        }
+
+        /// <summary>
         /// Delegate for an info message event
         /// </summary>
         /// <param name="infoType">The type of the message (<see cref="InfoType"/>)</param>
@@ -79,7 +114,7 @@ namespace HtmlPictureTableCreator.Global
 
         public static List<ImageModel> GetImageFiles(string path)
         {
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
                 throw new ArgumentNullException(nameof(path));
 
             var dirInfo = new DirectoryInfo(path);
@@ -155,6 +190,28 @@ namespace HtmlPictureTableCreator.Global
                 return value?.ToString() ?? "";
             }
         }
+        /// <summary>
+        /// Extracts the description of an enum
+        /// </summary>
+        /// <param name="value">The enum</param>
+        /// <returns>The description</returns>
+        public static string GetDescription(this Enum value)
+        {
+            try
+            {
+                var fieldInfo = value.GetType().GetField(value.ToString());
+
+                var attributes =
+                    (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+                return attributes.Length > 0 ? attributes[0].Description : value.ToString();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("An error has occured while extracting the enum description.", ex);
+                return value?.ToString() ?? "";
+            }
+        }
 
         /// <summary>
         /// Calculates the progress
@@ -168,6 +225,25 @@ namespace HtmlPictureTableCreator.Global
                 return 0;
 
             return 100 / max * step;
+        }
+
+
+        /// <summary>
+        /// Gets the path of the base folder
+        /// </summary>
+        /// <returns>The path of the base folder</returns>
+        public static string GetBaseFolder()
+        {
+            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+        /// <summary>
+        /// Converts the color into a html color code
+        /// </summary>
+        /// <param name="color">The color</param>
+        /// <returns>The html color code</returns>
+        public static string ToHtmlColor(this Color color)
+        {
+            return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
         }
     }
 }
