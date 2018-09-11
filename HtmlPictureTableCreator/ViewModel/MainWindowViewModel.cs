@@ -421,6 +421,14 @@ namespace HtmlPictureTableCreator.ViewModel
         }
 
         /// <summary>
+        /// Fires the change event for all properties
+        /// </summary>
+        private void FireChangeEvent()
+        {
+
+        }
+
+        /// <summary>
         /// Starts the creation
         /// </summary>
         private void Start()
