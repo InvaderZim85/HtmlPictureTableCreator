@@ -2,15 +2,23 @@
     x:Class="HtmlPictureTableCreator.View.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:customControls="clr-namespace:HtmlPictureTableCreator.View.CustomControls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:HtmlPictureTableCreator"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="clr-namespace:HtmlPictureTableCreator.View"
     xmlns:viewModel="clr-namespace:HtmlPictureTableCreator.ViewModel"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="HTML - Picture table creator"
     Width="525"
-    Height="683.016"
+    Height="680"
+    Background="{DynamicResource MaterialDesignPaper}"
+    FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
     Loaded="MainWindow_OnLoaded"
+    TextElement.FontSize="14"
+    TextElement.FontWeight="Medium"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -19,14 +27,288 @@
     <Window.DataContext>
         <viewModel:MainWindowViewModel />
     </Window.DataContext>
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Source  -->
+        <GroupBox
+            Grid.Row="0"
+            Margin="3"
+            Header="Source"
+            Style="{DynamicResource MaterialDesignGroupBox}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Content="Directory:" />
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3"
+                    Text="{Binding Source}" />
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Width="50"
+                    Margin="3"
+                    Command="{Binding BrowseCommand}"
+                    Content="..."
+                    Style="{StaticResource MaterialDesignRaisedLightButton}"
+                    ToolTip="Browse for the folder" />
+            </Grid>
+        </GroupBox>
+
+        <!--  Image settings  -->
+        <GroupBox
+            Grid.Row="1"
+            Margin="3"
+            Header="Image settings"
+            Style="{DynamicResource MaterialDesignGroupBox}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Content="Create thumbnails:" />
+                <CheckBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    IsChecked="{Binding CreateThumbnails}" />
+
+                <GroupBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Margin="3"
+                    BorderThickness="0"
+                    Header="Shadow Header"
+                    Style="{DynamicResource MaterialDesignGroupBox}"
+                    Visibility="{Binding CreateThumbnails, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Content="Keep ratio:" />
+                        <CheckBox
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3,0,0,0"
+                            IsChecked="{Binding KeepRatio}" />
+
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Content="Ratio:" />
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="3"
+                            ItemsSource="{Binding RatioList}"
+                            SelectedItem="{Binding SelectedRatio}" />
+
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Content="Width:" />
+
+                        <customControls:IntegerControl
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="3"
+                            MaxValue="1920"
+                            MinValue="1"
+                            Value="{Binding ThumbnailWidth}" />
+
+                        <Label
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Content="Height:" />
+
+                        <customControls:IntegerControl
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="3"
+                            MaxValue="1200"
+                            MinValue="1"
+                            Value="{Binding ThumbnailHeight}" />
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+
+        <!--  Page settings  -->
+        <GroupBox
+            Grid.Row="2"
+            Margin="3"
+            Header="Page settings">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <materialDesign:ColorZone
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Padding="2"
+                    Mode="Dark">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="General" />
+                    </StackPanel>
+                </materialDesign:ColorZone>
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="Header:" />
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="3" />
+
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Content="Columns:" />
+                <customControls:IntegerControl
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="3"
+                    Value="{Binding ColumnCount}" />
+
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Content="Footer:" />
+                <ComboBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="3"
+                    ItemsSource="{Binding ImageFooterList}"
+                    SelectedItem="{Binding ImageFooter}" />
+
+                <materialDesign:ColorZone
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Padding="2"
+                    Mode="Dark">
+                    <TextBlock
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="Links" />
+                </materialDesign:ColorZone>
+
+                <Label
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    Content="Blank target:" />
+                <CheckBox
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    IsChecked="{Binding BlankTarget}" />
+
+                <materialDesign:ColorZone
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Padding="2"
+                    Mode="Dark">
+                    <TextBlock
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="Archive" />
+                </materialDesign:ColorZone>
+
+                <Label
+                    Grid.Row="7"
+                    Grid.Column="0"
+                    Content="Create archive:" />
+                <CheckBox
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    IsChecked="{Binding CreateArchive}" />
+
+                <Label
+                    Grid.Row="8"
+                    Grid.Column="0"
+                    Content="Name:" />
+                <TextBox
+                    Grid.Row="8"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsEnabled="{Binding CreateArchive, Converter={StaticResource InverseBool}}" />
+            </Grid>
+        </GroupBox>
+    </Grid>
+
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  Settings  -->
+    -->
+    <!--  Settings  -->
+    <!--
         <GroupBox
             Grid.Row="0"
             Header="Settings"
@@ -249,13 +531,17 @@
             </Grid>
         </GroupBox>
 
-        <!--  GridSplitter  -->
+    -->
+    <!--  GridSplitter  -->
+    <!--
         <GridSplitter
             Grid.Row="1"
             Height="3"
             HorizontalAlignment="Stretch" />
 
-        <!--  Info  -->
+    -->
+    <!--  Info  -->
+    <!--
         <GroupBox Grid.Row="2" Header="Info">
             <Grid>
                 <Grid.RowDefinitions>
@@ -288,5 +574,5 @@
                     Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </Grid>
         </GroupBox>
-    </Grid>
+    </Grid>-->
 </Window>
