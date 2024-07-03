@@ -12,6 +12,8 @@ The program is now somewhat outdated and still relies on "old" technologies. In 
 
 So stay tuned ;)
 
+Cheers Zim
+
 ## Overview
 
 With this tool, you can create easily a *small* and *leightweight* HTML-page for a list of images. I've created this tool because I was tired to type everything on my own or use *heavy* tools to create a simple html page which shows only some images. With this tool I can create a html page, upload it to my webspace and share the link of the page with my friends to show them my images.
