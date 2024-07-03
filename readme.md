@@ -7,11 +7,13 @@
 - [ToDos](#todos)
 
 ## Overview
+
 With this tool, you can create easily a *small* and *leightweight* HTML-page for a list of images. I've created this tool because I was tired to type everything on my own or use *heavy* tools to create a simple html page which shows only some images. With this tool I can create a html page, upload it to my webspace and share the link of the page with my friends to show them my images.
 
 You can download the tool here: [HTML - Picture table creator](http://www.de-boddels.de/images/HtmlPictureTableCreator.zip)
 
 ## Usage
+
 The usage is really straigth forward:
 
 ![window](http://www.de-boddels.de/images/window.png)
@@ -39,6 +41,7 @@ And this is the result:
 ![result](http://www.de-boddels.de/images/result.png)
 
 ## For developers
+
 The tool is created with .NET-Framework 4.7.
 
 Following NuGet-Packages are used:
@@ -52,6 +55,7 @@ Following NuGet-Packages are used:
     - NLog.Schema
 
 ## ToDos
+
 The tool is in a very early stadium and some *features* are missing :) The following things are on my todo list:
 - **General**
     - Logging of exceptions into a file via NLog. At the moment the logging is really *rudimentary*
